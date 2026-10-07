@@ -66,7 +66,8 @@ Tarayıcınızdan **[http://localhost:3000](http://localhost:3000)** adresine gi
 ├── src/
 │   ├── ai.js                # Gemini AI & Akıllı kural tabanlı yanıt motoru
 │   ├── bot.js               # WhatsApp Baileys istemcisi ve mesaj işleyici
-│   └── server.js            # Express & WebSocket sunucusu
+│   ├── server.js            # Express & WebSocket sunucusu
+│   └── stockService.js      # Çift yönlü stok (ry) ve raf (ri) arama motoru
 ├── .env                     # Yapılandırma ayarları
 ├── .gitignore               # Git çakışmalarını önleyen kurallar
 ├── baslat.bat               # Tek tıkla başlatıcı
