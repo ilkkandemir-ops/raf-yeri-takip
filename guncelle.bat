@@ -37,6 +37,11 @@ if %errorlevel% neq 0 (
     git remote add origin https://github.com/ilkkandemir-ops/raf-yeri-takip.git
 )
 
+:: EXCEL GUVENLIK KALKANI (Guncelleme oncesi otomatik yerel koruma)
+if exist "Raf Yerleri.xlsx" (
+    copy /y "Raf Yerleri.xlsx" "Raf Yerleri_GUNCELLEME_KORUMASI.xlsx" >nul 2>nul
+)
+
 echo [1/3] Git sunucusundan en guncel kodlar cekiliyor...
 git fetch origin main >nul 2>nul
 git pull origin main
@@ -46,6 +51,14 @@ if %errorlevel% neq 0 (
     git stash
     git pull origin main
     git stash pop >nul 2>nul
+)
+
+:: EXCEL KORUMA KONTROLU (Git silmeye calissa bile aninda geri getir)
+if not exist "Raf Yerleri.xlsx" (
+    if exist "Raf Yerleri_GUNCELLEME_KORUMASI.xlsx" (
+        copy /y "Raf Yerleri_GUNCELLEME_KORUMASI.xlsx" "Raf Yerleri.xlsx" >nul 2>nul
+        echo [KORUMA] Excel stok veritabaniniz guvenle korundu.
+    )
 )
 
 echo.

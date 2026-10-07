@@ -106,6 +106,19 @@ class StockService {
             }
 
             console.log(`[StockService] Excel dosyası yükleniyor: ${path.basename(this.excelPath)}`);
+
+            // Otomatik Güvenlik Yedeği Al (Veri kaybını imkansız kılmak için)
+            try {
+                const backupDir = path.join(path.dirname(this.excelPath), 'yedekler');
+                if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+                const dateStr = new Date().toISOString().slice(0, 10);
+                const backupPath = path.join(backupDir, `Raf_Yerleri_Yedek_${dateStr}.xlsx`);
+                if (!fs.existsSync(backupPath)) {
+                    fs.copyFileSync(this.excelPath, backupPath);
+                    console.log(`[Güvenlik] Excel otomatik günlük yedeği oluşturuldu: ${path.basename(backupPath)}`);
+                }
+            } catch (backupErr) {}
+
             const wb = xlsx.readFile(this.excelPath);
             const map = new Map();
             let totalRows = 0;
