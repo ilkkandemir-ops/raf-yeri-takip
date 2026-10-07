@@ -1,0 +1,22 @@
+# Bağımlılıklar
+node_modules/
+
+# Ortam değişkenleri ve gizli anahtarlar
+.env
+
+# WhatsApp Oturum ve Anahtar Dosyaları (Kullanıcıya özel kalmalıdır)
+session_auth/
+auth_info/
+auth_info_baileys/
+baileys_store_multi.json
+
+# Log dosyaları
+*.log
+npm-debug.log*
+
+# İşletim sistemi kalıntıları
+.DS_Store
+Thumbs.db
+
+# Test ve geçici dosyalar
+scratch/

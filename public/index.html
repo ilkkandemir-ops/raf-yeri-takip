@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depo Destek Asistanı - Stok & Raf Yeri Kontrol Paneli</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+    <!-- Arka Plan Görsel Efektleri -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="app-container">
+        <!-- Üst Başlık ve Durum Çubuğu -->
+        <header class="header">
+            <div class="brand">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <div>
+                    <h1 id="headerBotTitle">Depo Destek Asistanı</h1>
+                    <p class="brand-subtitle" id="headerCompanyTitle">WhatsApp Stok Kodu & Raf Yeri Otomasyonu</p>
+                </div>
+            </div>
+
+            <div class="header-status">
+                <div id="stockBadgeHeader" class="status-pill status-stock">
+                    <span class="stock-icon">📦</span>
+                    <span id="stockCountText">3.739+ Stok Yüklü</span>
+                </div>
+                <div id="connectionPill" class="status-pill status-disconnected">
+                    <span class="status-dot"></span>
+                    <span id="connectionText">Bağlantı Bekleniyor...</span>
+                </div>
+                <div class="header-actions">
+                    <button id="btnGitUpdate" class="btn btn-secondary" title="Git Sunucusundan Güncelle (raf-yeri-takip)">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Güncelle
+                    </button>
+                    <button id="btnRestart" class="btn btn-secondary" title="Botu Yeniden Başlat">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                        Yeniden Başlat
+                    </button>
+                    <button id="btnLogout" class="btn btn-danger" title="Oturumu Sıfırla / Çıkış">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                        Çıkış Yap
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sekmeler (Tabs) -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="tab-stock">
+                <span class="tab-icon">📦</span> Stok & Raf Arama
+            </button>
+            <button class="tab-btn" data-tab="tab-qr">
+                <span class="tab-icon">📱</span> WhatsApp Bağlantısı
+            </button>
+            <button class="tab-btn" data-tab="tab-live">
+                <span class="tab-icon">💬</span> Canlı Mesaj Akışı
+                <span id="liveBadge" class="badge">0</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-sandbox">
+                <span class="tab-icon">🧪</span> Bot Test Simülatörü
+            </button>
+            <button class="tab-btn" data-tab="tab-knowledge">
+                <span class="tab-icon">📚</span> Bilgi Bankası
+            </button>
+            <button class="tab-btn" data-tab="tab-settings">
+                <span class="tab-icon">⚙️</span> Ayarlar
+            </button>
+        </nav>
+
+        <!-- Sekme İçerikleri -->
+        <main class="tab-content-container">
+
+            <!-- 1. Stok & Raf Arama Sekmesi -->
+            <section id="tab-stock" class="tab-panel active">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2>🔍 Depo Stok & Raf Arama Motoru</h2>
+                            <p class="text-muted">Excel (`Raf Yerleri.xlsx`) veritabanında anlık birebir ve benzer stok araması yapın.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button id="btnReloadExcel" class="btn btn-secondary btn-sm" title="Excel Dosyasını Yeniden Yükle">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                Excel'i Yenile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- İstatistik Barı -->
+                    <div class="stock-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🏷️</div>
+                            <div>
+                                <div class="stat-value" id="statTotalItems">-</div>
+                                <div class="stat-label">Toplam Benzersiz Stok</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📑</div>
+                            <div>
+                                <div class="stat-value" id="statTotalRows">-</div>
+                                <div class="stat-label">Taranan Satır Sayısı</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div>
+                                <div class="stat-value" id="statSheets">Sayfa3, Sayfa1</div>
+                                <div class="stat-label">Aktif Excel Sayfaları</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⚡</div>
+                            <div>
+                                <div class="stat-value text-accent">ry & ri</div>
+                                <div class="stat-label">Tetikleyici Komutlar</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Arama Çubuğu -->
+                    <div class="stock-search-box">
+                        <div class="search-input-wrapper">
+                            <span class="search-prefix">ry/ri</span>
+                            <input type="text" id="inputStockSearch" placeholder="Stok ara (Örn: 1510FY50TF, RULMAN) veya Raf İçeriği ara (Örn: ri A1A, ri A-1A, ri A1)..." autocomplete="off">
+                            <button id="btnDoStockSearch" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                Ara
+                            </button>
+                        </div>
+                        <div class="quick-tags">
+                            <span class="text-muted">Stok (ry):</span>
+                            <button class="tag-btn" data-query="1510FY50TF">1510FY50TF</button>
+                            <button class="tag-btn" data-query="RULMAN">RULMAN</button>
+                            <button class="tag-btn" data-query="TIRMIK PİSTON">TIRMIK PİSTON</button>
+                            <span class="text-muted" style="margin-left: 10px;">Raf İçeriği (ri):</span>
+                            <button class="tag-btn" data-query="ri A1A" style="border-color: #3b82f6; color: #93c5fd;">📍 ri A1A</button>
+                            <button class="tag-btn" data-query="ri A-1A" style="border-color: #3b82f6; color: #93c5fd;">📍 ri A-1A</button>
+                            <button class="tag-btn" data-query="ri A1" style="border-color: #3b82f6; color: #93c5fd;">📍 ri A1</button>
+                        </div>
+                    </div>
+
+                    <!-- Arama Sonuç Alanı -->
+                    <div id="stockResultsContainer" class="stock-results-container">
+                        <div class="empty-state" id="stockEmptyState">
+                            <div class="empty-icon">📦</div>
+                            <h3>Arama Sonuçları Burada Görünecektir</h3>
+                            <p>Yukarıdaki arama çubuğuna bir stok kodu veya ürün adı yazarak anında raf konumunu öğrenebilirsiniz.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. QR Kod & WhatsApp Bağlantı Sekmesi -->
+            <section id="tab-qr" class="tab-panel">
+                <div class="grid-2col">
+                    <div class="card qr-card">
+                        <div class="card-header">
+                            <h2>📱 WhatsApp QR Kodu</h2>
+                            <span class="badge badge-pulse" id="qrStatusBadge">Hazır</span>
+                        </div>
+                        <div class="qr-wrapper">
+                            <div id="qrLoading" class="qr-placeholder">
+                                <div class="spinner"></div>
+                                <p>QR Kod oluşturuluyor...</p>
+                            </div>
+                            <img id="qrImage" class="qr-image" style="display: none;" alt="WhatsApp QR Code">
+                            <div id="qrConnectedNotice" class="qr-connected" style="display: none;">
+                                <div class="success-icon">✓</div>
+                                <h3>WhatsApp Başarıyla Bağlandı!</h3>
+                                <p id="connectedUserPhone">+90 ...</p>
+                                <span class="badge-success">Depo Destek Asistanı Aktif & Dinlemede</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button id="btnRefreshQr" class="btn btn-secondary btn-sm">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                QR Kodu Yenile
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card guide-card">
+                        <div class="card-header">
+                            <h2>⚡ Depo Asistanı Nasıl Çalışır?</h2>
+                        </div>
+                        <div class="steps-list">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-text">
+                                    <h4>WhatsApp'ı Bağlayın</h4>
+                                    <p>Yandaki QR kodu WhatsApp'ınızdan <b>"Bağlı Cihazlar"</b> menüsünden taratın.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-text">
+                                    <h4>Stok & Raf Sorgusu Gönderin</h4>
+                                    <p>Depo çalışanları herhangi bir sohbetten <code>ry [kod veya isim]</code> yazdığında asistan anında cevap verir.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-text">
+                                    <h4>Birebir veya Benzer Eşleşme</h4>
+                                    <p>Kod birebir uyuyorsa tam raf yeri, uymuyorsa benzer stoklar listelenir.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-text">
+                                    <h4>Sadece "ry " Komutuna Yanıt</h4>
+                                    <p>Asistan yalnızca <code>ry </code> ile başlayan mesajlara yanıt vererek diğer sohbetleri rahatsız etmez.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Canlı Mesaj Akışı Sekmesi -->
+            <section id="tab-live" class="tab-panel">
+                <div class="card full-height-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>💬 Canlı WhatsApp Mesaj & Raf Sorgu Akışı</h2>
+                            <p class="text-muted">Depo personelinden gelen <code>ry </code> sorguları ve asistanın yanıtları anlık olarak listelenir.</p>
+                        </div>
+                        <button id="btnClearLogs" class="btn btn-secondary btn-sm">Akışı Temizle</button>
+                    </div>
+
+                    <div id="messagesStream" class="messages-stream">
+                        <div class="empty-state" id="emptyLogsState">
+                            <div class="empty-icon">📬</div>
+                            <h3>Henüz mesaj bulunmuyor</h3>
+                            <p>WhatsApp üzerinden bir <code>ry ...</code> sorgusu geldiğinde burada otomatik olarak görünecektir.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Bot Test Simülatörü Sekmesi -->
+            <section id="tab-sandbox" class="tab-panel">
+                <div class="grid-2col sandbox-layout">
+                    <div class="card sandbox-chat-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>🧪 Depo Destek Test Simülatörü</h2>
+                                <p class="text-muted">WhatsApp'a mesaj göndermeden önce asistanın stok ve raf sorgularına yanıtını test edin.</p>
+                            </div>
+                            <button id="btnResetSandbox" class="btn btn-secondary btn-sm">Sohbeti Sıfırla</button>
+                        </div>
+
+                        <div id="sandboxChatContainer" class="sandbox-chat-box">
+                            <div class="chat-bubble bot-bubble">
+                                <div class="bubble-sender">📦 Depo Destek Asistanı</div>
+                                <div class="bubble-content">Merhaba! Depo Destek Asistanıyım. Stok kodu veya parça adı aramak için <b>ry [kod/isim]</b> şeklinde yazabilirsiniz.<br><br>Örnek: <code>ry 1510FY50TF</code> veya <code>ry RULMAN</code></div>
+                            </div>
+                        </div>
+
+                        <form id="sandboxForm" class="sandbox-input-form">
+                            <input type="text" id="sandboxInput" placeholder="Örn: ry 1510FY50TF veya ry TIRMIK PİSTON" autocomplete="off">
+                            <button type="submit" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card sandbox-info-card">
+                        <div class="card-header">
+                            <h3>🔍 Hızlı Test Komutları</h3>
+                        </div>
+                        <ul class="tips-list">
+                            <li>
+                                <b>Birebir Stok Kodu Araması:</b>
+                                <div class="code-copy-row">
+                                    <code>ry 1510FY50TF</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ry 1510FY50TF">Dene</button>
+                                </div>
+                            </li>
+                            <li>
+                                <b>Çoklu Raf Yeri Olan Stok:</b>
+                                <div class="code-copy-row">
+                                    <code>ry 1518160</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ry 1518160">Dene</button>
+                                </div>
+                            </li>
+                            <li>
+                                <b>Birebir Stok Adı Araması:</b>
+                                <div class="code-copy-row">
+                                    <code>ry BADEMCİK</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ry BADEMCİK">Dene</button>
+                                </div>
+                            </li>
+                            <li>
+                                <b>Benzer Stok Listeleme:</b>
+                                <div class="code-copy-row">
+                                    <code>ry TIRMIK PİSTON</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ry TIRMIK PİSTON">Dene</button>
+                                </div>
+                            </li>
+                            <li>
+                                <b>Genel Kelime Araması:</b>
+                                <div class="code-copy-row">
+                                    <code>ry RULMAN</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ry RULMAN">Dene</button>
+                                </div>
+                            </li>
+                            <li>
+                                <b>Raf İçeriği (Tam Raf Kodu):</b>
+                                <div class="code-copy-row">
+                                    <code>ri A1A</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ri A1A">Dene</button>
+                                </div>
+                            </li>
+                            <li>
+                                <b>Raf İçeriği (Tireli / Boşluklu Format):</b>
+                                <div class="code-copy-row">
+                                    <code>ri A-1A</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ri A-1A">Dene</button>
+                                </div>
+                            </li>
+                            <li>
+                                <b>Raf Grubu / Önek İçeriği:</b>
+                                <div class="code-copy-row">
+                                    <code>ri A1</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ri A1">Dene</button>
+                                </div>
+                            </li>
+                            <li>
+                                <b>Olmayan Stok / Raf Testi:</b>
+                                <div class="code-copy-row">
+                                    <code>ry XYZ999</code>
+                                    <button class="btn btn-secondary btn-xs btn-paste-test" data-test="ry XYZ999">Dene</button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Bilgi Bankası Sekmesi -->
+            <section id="tab-knowledge" class="tab-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2>📚 Asistan Bilgi Bankası & Kılavuz (`bilgi_bankasi.txt`)</h2>
+                            <p class="text-muted">Asistanın davranış kuralları ve depo yönergelerini buradan düzenleyebilirsiniz.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button id="btnSaveKnowledge" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-editor-container">
+                        <textarea id="knowledgeTextarea" spellcheck="false" placeholder="Depo yönergeleri ve asistan kurallarını buraya yazın..."></textarea>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="text-muted">💡 <b>İpucu:</b> Bilgi bankası kaydedildiği an botu yeniden başlatmanıza gerek kalmadan güncellenir.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Ayarlar Sekmesi -->
+            <section id="tab-settings" class="tab-panel">
+                <div class="card max-w-700">
+                    <div class="card-header">
+                        <h2>⚙️ Genel Ayarlar</h2>
+                    </div>
+
+                    <form id="settingsForm" class="settings-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="inputBotName">Asistan Adı</label>
+                                <input type="text" id="inputBotName" placeholder="Depo Destek Asistanı">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputCompanyName">Şirket / Birim Adı</label>
+                                <input type="text" id="inputCompanyName" placeholder="Depo & Lojistik Yönetimi">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputApiKey">Google Gemini API Anahtarı (Opsiyonel)</label>
+                            <div class="input-with-action">
+                                <input type="password" id="inputApiKey" placeholder="AIzaSy...">
+                                <button type="button" id="btnToggleApiKey" class="btn btn-secondary btn-sm">Göster</button>
+                            </div>
+                            <small class="form-hint">
+                                Stok ve raf aramaları doğrudan yerel Excel motoruyla <b>anında ve ücretsiz</b> çalışır. API anahtarı genel sohbetler için isteğe bağlıdır.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="checkAutoReply" checked>
+                                <span><b>Otomatik Cevaplama Aktif</b> (WhatsApp'tan gelen ry komutlarını anında yanıtla)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="checkIgnoreGroups">
+                                <span><b>Grup Mesajlarını Yoksay</b> (İşaretsiz ise gruplardan gelen ry sorgularına da cevap verir)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Ayarları Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Toast Bildirimi -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js?v=2"></script>
+</body>
+</html>
