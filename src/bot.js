@@ -3,7 +3,7 @@ const {
     useMultiFileAuthState,
     DisconnectReason,
     fetchLatestBaileysVersion,
-    makeInMemoryStore
+    makeCacheableSignalKeyStore
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const path = require('path');
@@ -25,7 +25,20 @@ const messageLogs = [];
 const MAX_LOGS = 100;
 let isStarting = false;
 let reconnectTimeout = null;
-const store = makeInMemoryStore({ logger: pino({ level: 'silent' }) });
+
+// Son mesajlar için bellek içi önbellek (Bad MAC ve getMessage onarımı için)
+const messageCache = new Map();
+const MAX_MESSAGE_CACHE = 2000;
+
+function cacheMessage(key, message) {
+    if (!key || !key.remoteJid || !key.id || !message) return;
+    const msgId = `${key.remoteJid}_${key.id}`;
+    messageCache.set(msgId, message);
+    if (messageCache.size > MAX_MESSAGE_CACHE) {
+        const oldestKey = messageCache.keys().next().value;
+        messageCache.delete(oldestKey);
+    }
+}
 
 // Oturum klasörü
 const AUTH_FOLDER = path.join(__dirname, '..', 'session_auth');
@@ -121,7 +134,10 @@ async function startWhatsAppBot() {
 
         sock = makeWASocket({
             version,
-            auth: state,
+            auth: {
+                creds: state.creds,
+                keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
+            },
             logger: pino({ level: 'silent' }),
             printQRInTerminal: false,
             browser: ['Depo Destek Asistanı', 'Chrome', '1.0.0'],
@@ -131,18 +147,11 @@ async function startWhatsAppBot() {
             keepAliveIntervalMs: 25000,
             retryRequestDelayMs: 3000,
             getMessage: async (key) => {
-                try {
-                    if (store) {
-                        const msg = await store.loadMessage(key.remoteJid, key.id);
-                        return msg?.message || undefined;
-                    }
-                } catch (e) {}
-                return undefined;
+                if (!key || !key.remoteJid || !key.id) return undefined;
+                const msgId = `${key.remoteJid}_${key.id}`;
+                return messageCache.get(msgId) || undefined;
             }
         });
-
-        // Store'u soket olaylarına bağla (mesaj retry ve şifreleme anahtar onarımı için)
-        store.bind(sock.ev);
 
         // Kimlik bilgilerini kaydet
         sock.ev.on('creds.update', saveCreds);
@@ -218,6 +227,10 @@ async function startWhatsAppBot() {
             if (chatUpdate.type !== 'notify') return;
 
             for (const msg of chatUpdate.messages) {
+                if (msg.key && msg.message) {
+                    cacheMessage(msg.key, msg.message);
+                }
+
                 // Kendi attığımız mesajları atla
                 if (msg.key.fromMe) continue;
 

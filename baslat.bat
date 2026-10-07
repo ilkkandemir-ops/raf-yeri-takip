@@ -1,9 +1,10 @@
 @echo off
 chcp 65001 > nul
-title Depo Destek Asistanı
+title Depo Destek Asistani
 color 0A
+cls
 echo ========================================================
-echo        DEPO DESTEK ASİSTANI - STOK & RAF YERİ BOTU
+echo        DEPO DESTEK ASISTANI - STOK VE RAF YERI BOTU
 echo ========================================================
 echo.
 echo Sunucu baslatiliyor...
