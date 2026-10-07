@@ -175,6 +175,7 @@ app.get('/api/config', (req, res) => {
         botName: process.env.BOT_NAME || 'Depo Destek Asistanı',
         companyName: process.env.COMPANY_NAME || 'Depo & Lojistik Yönetimi',
         geminiModel: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+        excelPath: process.env.EXCEL_PATH || '',
         autoReply: process.env.AUTO_REPLY !== 'false',
         ignoreGroups: process.env.IGNORE_GROUPS !== 'false',
         hasApiKey: !!(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim()),
@@ -183,7 +184,7 @@ app.get('/api/config', (req, res) => {
 });
 
 app.post('/api/config', (req, res) => {
-    const { apiKey, botName, companyName, autoReply, ignoreGroups } = req.body;
+    const { apiKey, botName, companyName, autoReply, ignoreGroups, excelPath } = req.body;
 
     if (apiKey !== undefined && apiKey.trim() !== '') {
         process.env.GEMINI_API_KEY = apiKey.trim();
@@ -192,6 +193,11 @@ app.post('/api/config', (req, res) => {
     if (companyName) process.env.COMPANY_NAME = companyName.trim();
     if (autoReply !== undefined) process.env.AUTO_REPLY = autoReply ? 'true' : 'false';
     if (ignoreGroups !== undefined) process.env.IGNORE_GROUPS = ignoreGroups ? 'true' : 'false';
+    if (excelPath !== undefined) {
+        process.env.EXCEL_PATH = excelPath.trim();
+        stockService.excelPath = excelPath.trim() || path.join(__dirname, '..', 'Raf Yerleri.xlsx');
+        stockService.loadData();
+    }
 
     // .env dosyasını güncelle
     try {
@@ -212,13 +218,14 @@ app.post('/api/config', (req, res) => {
         if (companyName) updateEnvVar('COMPANY_NAME', companyName.trim());
         if (autoReply !== undefined) updateEnvVar('AUTO_REPLY', autoReply ? 'true' : 'false');
         if (ignoreGroups !== undefined) updateEnvVar('IGNORE_GROUPS', ignoreGroups ? 'true' : 'false');
+        if (excelPath !== undefined) updateEnvVar('EXCEL_PATH', excelPath.trim());
 
         fs.writeFileSync(envPath, envContent.trim() + '\n', 'utf-8');
     } catch (e) {
         console.error('.env yazma hatası:', e.message);
     }
 
-    res.json({ success: true, message: 'Ayarlar başarıyla kaydedildi.' });
+    res.json({ success: true, message: 'Ayarlar başarıyla kaydedildi.', stats: stockService.getStats() });
 });
 
 // 6. Test Sandbox (Arayüzden botu deneme)

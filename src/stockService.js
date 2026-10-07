@@ -81,7 +81,7 @@ function levenshteinDistance(s1, s2) {
 
 class StockService {
     constructor(excelPath) {
-        this.excelPath = excelPath || path.join(__dirname, '..', 'Raf Yerleri.xlsx');
+        this.excelPath = excelPath || process.env.EXCEL_PATH || path.join(__dirname, '..', 'Raf Yerleri.xlsx');
         this.items = [];
         this.shelfMap = new Map(); // normShelf -> { rawShelf, items: [] }
         this.lastLoaded = null;

@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputCompanyName = document.getElementById('inputCompanyName');
     const checkAutoReply = document.getElementById('checkAutoReply');
     const checkIgnoreGroups = document.getElementById('checkIgnoreGroups');
+    const inputExcelPath = document.getElementById('inputExcelPath');
     
     // Toast
     const toast = document.getElementById('toast');
@@ -542,6 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkAutoReply.checked = data.autoReply !== false;
             checkIgnoreGroups.checked = data.ignoreGroups === true;
 
+            if (inputExcelPath) inputExcelPath.value = data.excelPath || '';
             if (headerBotTitle) headerBotTitle.textContent = data.botName || 'Depo Destek Asistanı';
             if (headerCompanyTitle) headerCompanyTitle.textContent = data.companyName ? `${data.companyName} Stok & Raf Paneli` : 'WhatsApp Stok Kodu & Raf Yeri Otomasyonu';
         } catch (e) {
@@ -557,7 +559,8 @@ document.addEventListener('DOMContentLoaded', () => {
             botName: inputBotName.value,
             companyName: inputCompanyName.value,
             autoReply: checkAutoReply.checked,
-            ignoreGroups: checkIgnoreGroups.checked
+            ignoreGroups: checkIgnoreGroups.checked,
+            excelPath: inputExcelPath ? inputExcelPath.value : ''
         };
 
         try {
@@ -570,6 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 showToast('✅ Ayarlar başarıyla kaydedildi!');
                 loadSettings();
+                loadStockStats();
             }
         } catch (err) {
             showToast('❌ Ayarlar kaydedilirken hata oluştu');

@@ -20,3 +20,8 @@ Thumbs.db
 
 # Test ve geçici dosyalar
 scratch/
+
+# Excel Stok ve Veritabanı Dosyaları (Canlı/dinamik veri ve gizlilik koruması)
+*.xlsx
+*.xls
+Raf Yerleri.xlsx
