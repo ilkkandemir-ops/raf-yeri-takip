@@ -1,8 +1,8 @@
 @echo off
-chcp 65001 > nul
 title Depo Destek Asistani
 color 0A
 cls
+
 echo ========================================================
 echo        DEPO DESTEK ASISTANI - STOK VE RAF YERI BOTU
 echo ========================================================
