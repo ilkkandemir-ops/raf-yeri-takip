@@ -270,6 +270,17 @@ app.post('/api/system/update', (req, res) => {
     });
 });
 
+// Sunucu Hata Yakalama (Örn: Port 3000 meşgul ise)
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`\n❌ [PORT ÇAKIŞMASI] ${PORT} numaralı port şu anda başka bir program (veya açık kalan eski oturum) tarafından kullanılıyor!`);
+        console.error(`💡 ÇÖZÜM: Lütfen açık olan diğer siyah komut istemi penceresini kapatın veya Görev Yöneticisi'nden (Ayrıntılar sekmesi) "node.exe" görevini sonlandırıp baslat.bat'ı tekrar çalıştırın.\n`);
+    } else {
+        console.error('\n❌ [Sunucu Başlatma Hatası]:', err.message);
+    }
+    process.exit(1);
+});
+
 // Sunucuyu ve WhatsApp Botunu Başlat
 server.listen(PORT, () => {
     console.log(`\n======================================================`);
