@@ -432,6 +432,7 @@ class StockService {
 
         return {
             isRyCommand: true,
+            command: 'ry',
             query,
             searchResult,
             replyText

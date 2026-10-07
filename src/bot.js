@@ -264,7 +264,8 @@ async function startWhatsAppBot() {
                     continue;
                 }
 
-                console.log(`🔍 [Depo Destek (${cmdResult.command.toUpperCase()})] Sorgu: "${cmdResult.query}" (Sonuç: ${cmdResult.searchResult.type})`);
+                const cmdTag = (cmdResult.command || (cmdResult.isRyCommand ? 'ry' : 'ri')).toUpperCase();
+                console.log(`🔍 [Depo Destek (${cmdTag})] Sorgu: "${cmdResult.query}" (Sonuç: ${cmdResult.searchResult.type})`);
 
                 // Mesajı okundu olarak işaretle ve "yazıyor..." durumunu göster
                 try {
@@ -295,7 +296,7 @@ async function startWhatsAppBot() {
                     isGroup: isGroup,
                     incomingMessage: text,
                     replyMessage: replyText,
-                    source: `${cmdResult.command}_${matchType}`,
+                    source: `${(cmdResult.command || 'ry').toLowerCase()}_${matchType}`,
                     query: cmdResult.query,
                     timestamp: new Date().toISOString()
                 };
